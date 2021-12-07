@@ -1,5 +1,3 @@
-const Libro = require('../models/Libro');
-
 module.exports.test = (req, res) => {
   console.log('imprime apiController');
   const { id } = res.locals.user;

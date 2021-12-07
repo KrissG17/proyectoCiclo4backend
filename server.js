@@ -28,7 +28,7 @@ mongoose
     }
   )
   .then(() => {
-    console.log('Conected to Mongo at: ' + process.env.DB_HOST);
+    //console.log('Conected to Mongo at: ' + process.env.DB_HOST);
     app.listen(process.env.PORT || 8080);
     console.log('Listening on PORT: ' + process.env.PORT);
   })

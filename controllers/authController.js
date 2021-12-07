@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Libro = require('../models/Libro');
+const Nota = require('../models/Nota');
 const jwt = require('jsonwebtoken');
 
 const manejoErrores = (error) => {
@@ -38,11 +39,13 @@ const createToken = (id) => {
     expiresIn: maxAge,
   });
 };
+
+//registrar un libro
 module.exports.postRegistrarLibro = async (req, res) => {
   const { libroId, nombre, categoria, autor } = req.body;
   try {
     const libro = await Libro.create({ libroId, nombre, categoria, autor });
-    res.status(200).json({ id: libroId, nombre, categoria, autor });
+    res.status(200).json({ id: libro.libroId, nombre, categoria, autor });
   } catch (error) {
     // console.log(error);
     const errors = manejoErrores(error);
@@ -50,6 +53,20 @@ module.exports.postRegistrarLibro = async (req, res) => {
   }
 };
 
+//registrar una Nota
+module.exports.postRegistrarNota = async (req, res) => {
+  const { libroId, nota } = req.body;
+  try {
+    const notadb = await Libro.create({ libroId, nota });
+    res.status(200).json({ id: notadb.nota, nota });
+  } catch (error) {
+    // console.log(error);
+    const errors = manejoErrores(error);
+    res.status(400).json(errors);
+  }
+};
+
+//registrar user
 module.exports.postRegistrar = async (req, res) => {
   const { email, password } = req.body;
 
@@ -119,8 +136,28 @@ module.exports.revisarLibro = (req, res) => {
         console.log('error1');
         res.status(401).json({ user: null });
       } else {
-        let user = await User.findById(decodedToken.id);
-        res.status(200).json({ libro: { id: user._id, email: user.email } });
+        let libro = await Libro.findById(decodedToken.id);
+        res
+          .status(200)
+          .json({ libro: { id: libro.libroId, nombre, categoria, autor } });
+      }
+    });
+  } else {
+    console.log('error2');
+    res.status(401).json({ user: null });
+  }
+};
+module.exports.revisarNota = (req, res) => {
+  console.log('Revisar Nota');
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+      if (err) {
+        console.log('error1');
+        res.status(401).json({ user: null });
+      } else {
+        let nota = await Nota.findById(decodedToken.id);
+        res.status(200).json({ nota: { id: nota.libroId, nota } });
       }
     });
   } else {
